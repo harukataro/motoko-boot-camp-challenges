@@ -1,4 +1,4 @@
-import { day1 } from "../../declarations/day1";
+import { day_1 } from "../../declarations/day_1";
 
 document.querySelector("form").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -9,7 +9,7 @@ document.querySelector("form").addEventListener("submit", async (e) => {
   button.setAttribute("disabled", true);
 
   // Interact with foo actor, calling the greet method
-  const greeting = await day1.greet(name);
+  const greeting = await day_1.greet(name);
 
   button.removeAttribute("disabled");
 

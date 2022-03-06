@@ -1,19 +1,19 @@
 {
   "canisters": {
-    "day1": {
-      "main": "src/day1/main.mo",
+    "day_1": {
+      "main": "src/day_1/main.mo",
       "type": "motoko"
     },
-    "day1_assets": {
+    "day_1_assets": {
       "dependencies": [
-        "day1"
+        "day_1"
       ],
       "frontend": {
-        "entrypoint": "src/day1_assets/src/index.html"
+        "entrypoint": "src/day_1_assets/src/index.html"
       },
       "source": [
-        "src/day1_assets/assets",
-        "dist/day1_assets/"
+        "src/day_1_assets/assets",
+        "dist/day_1_assets/"
       ],
       "type": "assets"
     }
