@@ -1,6 +1,7 @@
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
+import Buffer "mo:base/Buffer";
 
 actor {
 
@@ -55,14 +56,15 @@ actor {
         return max;
     };
 
-    // Challenge 9
+        // Challenge 9
     public func remove_from_array(a: [Nat], b: Nat) : async [Nat] {
-        var ar : [Nat] = [];
+        var ar : Buffer.Buffer<Nat> = Buffer.Buffer(0);
         for(i in a.vals()) {
-            if (i != b) {ar := Array.append<Nat>(ar, [i]);}
+            if (i != b) {ar.add(i);}
         };
-        return ar;
+        return ar.toArray();
     };
+
 
     // Challenge 10
     public func selection_sort(ar : [Nat]) : async [Nat] {
