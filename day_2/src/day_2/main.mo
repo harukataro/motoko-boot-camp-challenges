@@ -1,5 +1,10 @@
 import Nat8 "mo:base/Nat8";
 import Nat "mo:base/Nat";
+import Text "mo:base/Text";
+import Prim "mo:prim";
+import Char "mo:base/Char";
+import Array "mo:base/Array";
+import Iter "mo:base/Iter";
 
 actor {
 
@@ -22,4 +27,57 @@ actor {
         return text;
     };
 
+    public func capitalize_character(c: Char) : async Char {
+        let c_upper = Prim.charToUpper(c);
+        return c_upper;
+    };
+
+    public func capitalize_text(t: Text) : async Text {
+        let t_upper = Text.map(t, Prim.charToUpper);
+        return t_upper;
+    };
+
+    public func is_inside(a: Text, c: Char) : async Bool {
+        return Text.contains(a, #char c);
+    };
+
+    public func trim_whitespace(t: Text) : async Text {
+        return Text.trim(t, #char ' ');
+    };
+
+    public func duplicated_characters(t: Text) : async Text {
+        for(c in t.chars()) {
+            var isFirst: Bool = true;
+            for(c2 in t.chars()){
+                if(Char.equal(c, c2)){
+                    if(isFirst){
+                        isFirst := false;
+                    } else {
+                        return Char.toText(c);
+                    }
+                }
+            };
+        };
+        return t;
+    };
+
+    public func size_in_byted(t: Text) : async Nat {
+        return Text.size(t);
+    };
+
+        public func bubble_sort(ar : [Nat]) : async [Nat] {
+        let a: [var Nat] = Array.thaw<Nat>(ar);
+        let a_idx_max = a.size() - 1;
+
+        for (step in Iter.range(0, a_idx_max -1)) {
+            for(i in Iter.range(0, a_idx_max - step -1)) {
+                if(a[i] > a[i+1]) {
+                    let tmp = a[i];
+                    a[i] := a[i+1];
+                    a[i+1] := tmp;
+                }
+            }
+        };
+        return Array.freeze<Nat>(a);
+    };
 };
