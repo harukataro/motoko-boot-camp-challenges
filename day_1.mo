@@ -56,7 +56,7 @@ actor {
         return max;
     };
 
-        // Challenge 9
+    // Challenge 9
     public func remove_from_array(a: [Nat], b: Nat) : async [Nat] {
         var ar : Buffer.Buffer<Nat> = Buffer.Buffer(0);
         for(i in a.vals()) {
