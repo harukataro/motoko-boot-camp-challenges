@@ -13,7 +13,11 @@
       "type": "motoko"
     },
     "day_4": {
-      "main": "day_4.mo",
+      "main": "day_4/main.mo",
+      "type": "motoko"
+    },
+    "day_4_list": {
+      "main": "day_4/list.mo",
       "type": "motoko"
     }
   },
