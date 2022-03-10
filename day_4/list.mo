@@ -6,30 +6,24 @@ module{
 
     public func is_null<T>(l: List<T>) : async Bool{
         switch(l){
-            case (null){ 
-                return true;
-            };
-            case (_){
-                return false;
-            };
+            case (null){true};
+            case (?l){false;};
         };
     };
 
-    func last<T>(l: List<T>) : ?T{
+    func last<T>(l: List<T>) : ?T {
         switch(l){
-            case (null){ 
-                return null;
-            };
-            case (?(_, t)){
-                return last<T>(t);
-            };
+            case (null){ null;};
+            case (?(t, null)){?t};
+            case (?(_, t)){last<T>(t)};
         };
     };
+    //Recursive until null 
 
     public func size<T>(l : List<T>) : Nat {
         func rec(l : List<T>, n : Nat) : Nat {
-            switch l {
-                case null { n };
+            switch(l) {
+                case null {n};
                 case (?(_, t)) { rec(t, n + 1) };
             }
         };
