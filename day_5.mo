@@ -77,8 +77,7 @@ actor{
 
     //Challenge7
     public func withdraw_cycles(n: Nat) {
-        //await xxx.deposit_cycles();
-        // will do later
+        Cycles.add(n);
     };
 
     //Challenge8
@@ -90,10 +89,4 @@ actor{
     };
     public func clear_counter(): async() {count := 0;};
     system func postupgrade() {version_number += 1;};
-
-    //Challenge9
-      //-> day_5_9.mo
-
-    //Challenge10
-
 }
