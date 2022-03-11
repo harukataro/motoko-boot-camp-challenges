@@ -5,24 +5,34 @@ import Buffer "mo:base/Buffer";
 import Nat "mo:base/Nat";
 import Hash "mo:base/Hash";
 import Option "mo:base/Option";
+import Cycles "mo:base/ExperimentalCycles";
 
-actor{
+shared({caller = creator}) actor class Memo() = {
+
+    let owner : Principal = creator;
     let anonymous_principal : Principal = Principal.fromText("2vxsx-fae");
-    // CRUD
-    // 
+    let PRICE = 1000; 
     var Memos = HashMap.HashMap<Nat,Text>(0, Nat.equal, Hash.hash);
     var MemoHolder = HashMap.HashMap<Nat,Principal.Principal>(0, Nat.equal, Hash.hash);
     var KeyNum = 0;
 
     //Create
-    public shared(msg) func create(text: Text): async ?Nat {
+    public shared(msg) func create(text: Text): async Int {
         if(Principal.equal(msg.caller, anonymous_principal)){
-            return null;
+            return -1;
         };
-        Memos.put(KeyNum, text);
-        MemoHolder.put(KeyNum, msg.caller);
-        KeyNum += 1;
-        return ?KeyNum;
+        let cycles = Cycles.available();
+        if(cycles < PRICE) {
+            return -1;
+        }else{
+            ignore Cycles.accept(PRICE);
+            Memos.put(KeyNum, text);
+            MemoHolder.put(KeyNum, msg.caller);
+            KeyNum += 1;
+            return KeyNum;
+        }
+
+
     };
 
     //Read
@@ -33,7 +43,7 @@ actor{
 
     //Update
     public shared(msg) func update (key: Nat, text: Text): async Bool{
-        if(isOwer(key, msg.caller)){
+        if(isOwerOrAdmin(key, msg.caller)){
             let resp = Memos.replace(key, text);
             return true;
         };
@@ -41,22 +51,17 @@ actor{
     };
 
     //Delete
-    public func delete (key: Nat) :async Bool{
-        let status = Memos.remove(key);
-        switch(status) {
-            case(null){false};
-            case(_){
-                let status2 = MemoHolder.remove(key);
-                switch(status2) {
-                    case(null){false};
-                    case(_){true};
-                };
-            };
+    public shared(msg) func delete (key: Nat) {
+        if(isOwerOrAdmin(key, msg.caller)){
+            let status = Memos.remove(key);
+            let status2 = MemoHolder.remove(key);
         };
     };
 
-    private func isOwer(key: Nat, msg: Principal.Principal): Bool{
-        let ans = Option.get(MemoHolder.get(key), anonymous_principal);
-        return Principal.equal(ans, msg);
+    private func isOwerOrAdmin(key: Nat, p: Principal.Principal): Bool{
+        let  memoOwner = Option.get(MemoHolder.get(key), anonymous_principal);
+        var ans: Bool = Principal.equal(p, memoOwner);
+        ans := ans and Principal.equal(p, owner);
+        return ans;
     };
 }
