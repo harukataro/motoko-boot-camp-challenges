@@ -1,61 +1,62 @@
 import Principal "mo:base/Principal";
 import HashMap "mo:base/HashMap";
 import Iter "mo:base/Iter";
+import Buffer "mo:base/Buffer";
+import Nat "mo:base/Nat";
+import Hash "mo:base/Hash";
+import Option "mo:base/Option";
 
 actor{
+    let anonymous_principal : Principal = Principal.fromText("2vxsx-fae");
+    // CRUD
+    // 
+    var Memos = HashMap.HashMap<Nat,Text>(0, Nat.equal, Hash.hash);
+    var MemoHolder = HashMap.HashMap<Nat,Principal.Principal>(0, Nat.equal, Hash.hash);
+    var KeyNum = 0;
 
-    stable var entries: [(Principal, Nat)] = [];
-
-    //Challenge2
-    let favoriteNumber = HashMap.HashMap<Principal, Nat>(0, Principal.equal, Principal.hash);
-
-    //Challenge3
-    public shared(msg) func add_favorite_number(n:Nat) {
-        let principal_caller = msg.caller;
-        favoriteNumber.put(principal_caller, n);
-    };
-    
-    public shared(msg) func show_favorite_number(): async ?Nat {
-        let principal_caller = msg.caller;
-        let n = favoriteNumber.get(principal_caller);
-        switch(n){
-            case (null){ return null;};
-            case (_){ return n;};
+    //Create
+    public shared(msg) func create(text: Text): async ?Nat {
+        if(Principal.equal(msg.caller, anonymous_principal)){
+            return null;
         };
+        Memos.put(KeyNum, text);
+        MemoHolder.put(KeyNum, msg.caller);
+        KeyNum += 1;
+        return ?KeyNum;
     };
 
-    //Challenge4
-    public shared(msg) func add_favorite_number2(n: Nat) : async Text {
-        let principal_caller = msg.caller;
-        let num = favoriteNumber.get(principal_caller);
-        switch(num){
-            case (null){
-                favoriteNumber.put(principal_caller, n); 
-                return "You've successfully registered your number";
-            };
+    //Read
+    public func read (key: Nat): async Text{
+        let ans = Option.get(Memos.get(key), "");
+        ans
+    };
+
+    //Update
+    public shared(msg) func update (key: Nat, text: Text): async Bool{
+        if(isOwer(key, msg.caller)){
+            let resp = Memos.replace(key, text);
+            return true;
+        };
+        return false;
+    };
+
+    //Delete
+    public func delete (key: Nat) :async Bool{
+        let status = Memos.remove(key);
+        switch(status) {
+            case(null){false};
             case(_){
-                return "You've already registered your number";
+                let status2 = MemoHolder.remove(key);
+                switch(status2) {
+                    case(null){false};
+                    case(_){true};
+                };
             };
         };
     };
 
-    //Challenge5
-    public shared(msg) func update_favorite_number(n:Nat) {
-        let principal_caller: Principal = msg.caller;
-        let num = favoriteNumber.get(principal_caller);
-        switch(num){
-            case (null){};
-            case(_){
-                favoriteNumber.put(principal_caller, n); 
-            };
-        };
-    };
-
-    system func preupgrade() {
-        entries := Iter.toArray(favoriteNumber.entries());
-    };
-
-    system func postupgrade() {
-        entries := [];
+    private func isOwer(key: Nat, msg: Principal.Principal): Bool{
+        let ans = Option.get(MemoHolder.get(key), anonymous_principal);
+        return Principal.equal(ans, msg);
     };
 }
