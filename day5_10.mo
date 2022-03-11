@@ -61,7 +61,7 @@ shared({caller = creator}) actor class Memo() = {
     private func isOwerOrAdmin(key: Nat, p: Principal.Principal): Bool{
         let  memoOwner = Option.get(MemoHolder.get(key), anonymous_principal);
         var ans: Bool = Principal.equal(p, memoOwner);
-        ans := ans and Principal.equal(p, owner);
+        ans := ans or Principal.equal(p, owner);
         return ans;
     };
 }
