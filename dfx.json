@@ -19,6 +19,10 @@
     "day_4_list": {
       "main": "day_4/list.mo",
       "type": "motoko"
+    },
+    "day_5": {
+      "main": "day_5.mo",
+      "type": "motoko"
     }
   },
   "defaults": {
